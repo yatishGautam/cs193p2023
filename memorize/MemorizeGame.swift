@@ -6,3 +6,21 @@
 //
 
 import Foundation
+
+struct MemorizeGame <ContentData> {
+    
+    private var cards: [Card]
+    
+    func toggleFace(){
+        
+    }
+    
+    func 
+    
+    
+    struct Card {
+        var isFaceUp = false
+        var isMatched = false
+        let content : ContentData
+    }
+}
