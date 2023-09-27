@@ -1,5 +1,5 @@
 //
-//  ContentView.swift
+//  EmojiGameContentView.swift
 //  memorize
 //
 //  Created by Yatish Gautam on 2023-08-27.
@@ -11,19 +11,20 @@ var foodAndDrinks = ["🍎","🍊","🥐","🍞","🥖","🧀","🥚","🍳","�
 var cars = ["🚗","🚕","🚑","🚓","🏎","🚒","🚜","🚲","🏍","🚔","🚘","🛩","🚀","🚁"]
 var balls = ["⚽️","🏀","🏈","🥎","🎾","🏐","🏉","🎱","🏸","🏏","⛳️","🥋","🎲","🎯","🎳"]
 
-struct ContentView: View {
+struct EmojiGameContentView: View {
     
     
-    var themeColor: [Color] = [.red, .yellow, .orange]
+    
     
     @State var theme: Int = 0
     @State var cardCount : Int = 4
     
     var body: some View {
         VStack {
+            titleLabel
             ScrollView{
-                cards
-            }
+                    cards
+                }
             Spacer()
             cardCountAdjuster
             Spacer()
@@ -31,10 +32,16 @@ struct ContentView: View {
         }
         .padding()
     }
+    
+    var titleLabel: some View {
+        Text("Memorize")
+            .font(.largeTitle)
+            .foregroundColor(themeColor[theme])
+    }
     let themeEmojis = [foodAndDrinks, cars, balls]
     var cards: some View{
         
-        return LazyVGrid(columns: [GridItem(.adaptive(minimum: 120))]) {
+        return LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))]) {
             ForEach(0..<cardCount, id: \.self) { index in
                 Cardview(emoji: themeEmojis[theme][index])
                     .aspectRatio(2/3, contentMode: .fit)
@@ -42,6 +49,7 @@ struct ContentView: View {
         }.foregroundColor(themeColor[theme])
     }
     
+    //consolidated card count adjusters
     var cardCountAdjuster: some View {
         HStack{
             cardAdder
@@ -56,7 +64,7 @@ struct ContentView: View {
     var cardRemover: some View {
         cardCountAdjuster(by: -1, icon: "minus.square.fill")
     }
-    
+    //generate card counter
     func cardCountAdjuster(by offset: Int, icon: String) -> some View{
         Button(action: {
             cardCount += offset
@@ -64,13 +72,18 @@ struct ContentView: View {
         .disabled((cardCount + offset < 1)||(cardCount + offset > themeEmojis[theme].count))
         .foregroundColor(themeColor[theme])
     }
-    
+    //select theme that needs to change
     var themeSelector: some View {
         HStack{
             ForEach(0...2, id: \.self){ index in
                 Button(action: {
                     theme = index
-                }, label: {Image(systemName: "\(index).circle.fill").font(.largeTitle)})
+                }, label: {
+                    VStack{
+                        Image(systemName: "\(index).circle.fill").font(.largeTitle)
+                        Text("Theme \(index+1)").font(.footnote)
+                    }
+                })
             }
         }.foregroundColor(themeColor[theme])
     }
@@ -110,13 +123,12 @@ struct Cardview: View {
     var body: some View{
         let base = RoundedRectangle(cornerRadius: 12)
         ZStack{
-            if isFaceup{
+            Group{
                 base.foregroundColor(.white)
                 base.strokeBorder(lineWidth: 2)
                 Text(emoji).font(.largeTitle)
-            }else{
-                base.fill()
-            }
+            }.opacity(isFaceup ? 1 : 0)
+            base.fill().opacity(isFaceup ? 0 : 1)
         }.onTapGesture {
             isFaceup.toggle()
             print("tapped")
@@ -133,8 +145,8 @@ struct Cardview: View {
 
 
 //MARK: - preview provider
-struct ContentView_Previews: PreviewProvider {
+struct EmojiGameView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        EmojiGameContentView()
     }
 }
