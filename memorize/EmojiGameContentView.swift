@@ -7,110 +7,44 @@
 
 import SwiftUI
 
-var foodAndDrinks = ["🍎","🍊","🥐","🍞","🥖","🧀","🥚","🍳","🍰","🍺","🍪","🍩","🍫","🍤","🍙","🌭","🦴","🍖","🍗","🌶"]
-var cars = ["🚗","🚕","🚑","🚓","🏎","🚒","🚜","🚲","🏍","🚔","🚘","🛩","🚀","🚁"]
-var balls = ["⚽️","🏀","🏈","🥎","🎾","🏐","🏉","🎱","🏸","🏏","⛳️","🥋","🎲","🎯","🎳"]
+//var foodAndDrinks = ["🍎","🍊","🥐","🍞","🥖","🧀","🥚","🍳","🍰","🍺","🍪","🍩","🍫","🍤","🍙","🌭","🦴","🍖","🍗","🌶"]
+//var cars = ["🚗","🚕","🚑","🚓","🏎","🚒","🚜","🚲","🏍","🚔","🚘","🛩","🚀","🚁"]
+//var balls = ["⚽️","🏀","🏈","🥎","🎾","🏐","🏉","🎱","🏸","🏏","⛳️","🥋","🎲","🎯","🎳"]
 
 struct EmojiGameContentView: View {
     
-    
-    
-    
-    @State var theme: Int = 0
-    @State var cardCount : Int = 4
+    @ObservedObject var viewModel: carsMemoryGame = carsMemoryGame()
     
     var body: some View {
         VStack {
             titleLabel
             ScrollView{
-                    cards
-                }
-            Spacer()
-            cardCountAdjuster
-            Spacer()
-            themeSelector
+                cards
+            }
+            Button("Shuffle"){
+                viewModel.shuffle()
+            }
         }
         .padding()
+        .foregroundColor(.orange)
     }
     
     var titleLabel: some View {
         Text("Memorize")
             .font(.largeTitle)
-            .foregroundColor(themeColor[theme])
     }
-    let themeEmojis = [foodAndDrinks, cars, balls]
+    
     var cards: some View{
-        
-        return LazyVGrid(columns: [GridItem(.adaptive(minimum: 65))]) {
-            ForEach(0..<cardCount, id: \.self) { index in
-                Cardview(emoji: themeEmojis[theme][index])
+        LazyVGrid(columns:[GridItem(.adaptive(minimum: 85), spacing: 0)], spacing: 0){
+            ForEach(viewModel.cards.indices, id: \.self){ index in
+                Cardview(card: viewModel.cards[index])
                     .aspectRatio(2/3, contentMode: .fit)
+                    .padding(4)
             }
-        }.foregroundColor(themeColor[theme])
+        }
     }
     
-    //consolidated card count adjusters
-    var cardCountAdjuster: some View {
-        HStack{
-            cardAdder
-            Spacer()
-            cardRemover
-        }.font(.largeTitle)
-    }
-    
-    var cardAdder: some View {
-        cardCountAdjuster(by: 1, icon: "plus.app.fill")
-    }
-    var cardRemover: some View {
-        cardCountAdjuster(by: -1, icon: "minus.square.fill")
-    }
-    //generate card counter
-    func cardCountAdjuster(by offset: Int, icon: String) -> some View{
-        Button(action: {
-            cardCount += offset
-        }, label: {Image(systemName: icon)})
-        .disabled((cardCount + offset < 1)||(cardCount + offset > themeEmojis[theme].count))
-        .foregroundColor(themeColor[theme])
-    }
-    //select theme that needs to change
-    var themeSelector: some View {
-        HStack{
-            ForEach(0...2, id: \.self){ index in
-                Button(action: {
-                    theme = index
-                }, label: {
-                    VStack{
-                        Image(systemName: "\(index).circle.fill").font(.largeTitle)
-                        Text("Theme \(index+1)").font(.footnote)
-                    }
-                })
-            }
-        }.foregroundColor(themeColor[theme])
-    }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -118,20 +52,24 @@ struct EmojiGameContentView: View {
 
 //MARK: - card view
 struct Cardview: View {
-    var emoji: String
-    @State var isFaceup: Bool = false
-    var body: some View{
+    let card: MemorizeGame<String>.Card
+    init(card: MemorizeGame<String>.Card) {
+        self.card = card
+    }
+    var body: some View {
         let base = RoundedRectangle(cornerRadius: 12)
         ZStack{
             Group{
                 base.foregroundColor(.white)
                 base.strokeBorder(lineWidth: 2)
-                Text(emoji).font(.largeTitle)
-            }.opacity(isFaceup ? 1 : 0)
-            base.fill().opacity(isFaceup ? 0 : 1)
-        }.onTapGesture {
-            isFaceup.toggle()
-            print("tapped")
+                Text(card.content)
+                    .font(.system(size: 200))
+                    .minimumScaleFactor(0.01)
+                    .aspectRatio(1, contentMode: .fit)
+            }
+            .opacity(card.isFaceUp ? 1 : 0)
+            base.fill()
+                .opacity(card.isFaceUp ? 0 : 1)
         }
     }
 }
