@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct MemorizeGame <ContentData> {
+struct MemorizeGame <ContentData> where ContentData: Equatable{
     
     private(set) var cards: [Card]
     
@@ -27,7 +27,14 @@ struct MemorizeGame <ContentData> {
         }
     }
     
-    struct Card {
+    struct Card : Equatable{
+        
+        static func == (lhs: MemorizeGame<ContentData>.Card, rhs: MemorizeGame<ContentData>.Card) -> Bool {
+            return lhs.content == rhs.content &&
+            lhs.isFaceUp == rhs.isFaceUp &&
+            lhs.isMatched == rhs.isMatched
+        }
+        
         var isFaceUp = true
         var isMatched = false
         let content : ContentData

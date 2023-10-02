@@ -20,6 +20,7 @@ struct EmojiGameContentView: View {
             titleLabel
             ScrollView{
                 cards
+                    .animation(.default, value: viewModel.cards)
             }
             Button("Shuffle"){
                 viewModel.shuffle()
