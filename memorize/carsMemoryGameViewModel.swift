@@ -7,7 +7,7 @@
 
 import Foundation
 
-class carsMemoryGame: ObservableObject {
+class carsMemoryGameViewModel: ObservableObject {
     private static let emojis = ["🚗","🚕","🚑","🚓","🏎","🚒","🚜","🚲","🏍","🚔","🚘","🛩","🚀","🚁"]
     
     @Published private var Model = createModel()
