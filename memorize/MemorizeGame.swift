@@ -12,7 +12,7 @@ struct MemorizeGame <ContentData> where ContentData: Equatable{
     private(set) var cards: [Card]
     var indexOfOnlyFaceUpCard: Int? {
         get {
-            var faceUpCardIndices = cards.indices.filter({index in cards[index].isFaceUp})
+            let faceUpCardIndices = cards.indices.filter({index in cards[index].isFaceUp})
             return faceUpCardIndices.count == 1 ? faceUpCardIndices.first : nil
         }
         set {
